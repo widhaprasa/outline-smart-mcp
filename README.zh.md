@@ -13,7 +13,7 @@
 
 | 功能 | 说明 |
 |------|------|
-| `ask_wiki` | 用自然语言提问，根据维基内容获取答案（RAG） |
+| `ask_outline` | 用自然语言提问，根据维基内容获取答案（RAG） |
 | `find_related` | 基于语义而非关键词查找相似文档 |
 | `summarize_document` | 生成长文档摘要 |
 | `suggest_tags` | 基于内容分析的标签建议 |
@@ -34,7 +34,7 @@
 
 ```
 用户："远程办公政策是什么？"
-→ ask_wiki 搜索维基并返回带有来源链接的答案
+→ ask_outline 搜索维基并返回带有来源链接的答案
 
 用户："查找与入职指南相关的文档"
 → find_related 返回语义相似的文档（而非仅关键词匹配）
@@ -311,8 +311,8 @@ ChatGPT 通过其桌面应用支持 MCP。在 **设置** → **MCP Servers** 中
 | 工具 | 描述 |
 |------|------|
 | `smart_status` | 检查状态和索引数量 |
-| `sync_knowledge` | 将文档同步到向量数据库 |
-| `ask_wiki` | 基于维基内容的 RAG 问答 |
+| `sync_outline` | 将文档同步到向量数据库 |
+| `ask_outline` | 基于维基内容的 RAG 问答 |
 | `summarize_document` | 生成 AI 摘要 |
 | `suggest_tags` | AI 标签建议 |
 | `find_related` | 查找语义相关的文档 |
@@ -322,10 +322,10 @@ ChatGPT 通过其桌面应用支持 MCP。在 **设置** → **MCP Servers** 中
 
 ```bash
 # 1. 首先同步维基文档
-sync_knowledge
+sync_outline
 
 # 2. 询问关于维基的问题
-ask_wiki: "我们的部署流程是什么？"
+ask_outline: "我们的部署流程是什么？"
 
 # 3. 摘要长文档
 summarize_document: { documentId: "doc-id", language: "Chinese" }

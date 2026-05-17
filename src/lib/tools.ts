@@ -42,13 +42,13 @@ export interface ToolRelationship {
 
 export const TOOL_RELATIONSHIPS: Record<string, ToolRelationship> = {
   // Smart Features
-  ask_wiki: {
-    prerequisite: ['sync_knowledge'],
-    tips: 'IMPORTANT: Run sync_knowledge first to index documents before using ask_wiki.',
+  ask_outline: {
+    prerequisite: ['sync_outline'],
+    tips: 'IMPORTANT: Run sync_outline first to index documents before using ask_outline.',
   },
   find_related: {
-    prerequisite: ['sync_knowledge'],
-    tips: 'Run sync_knowledge first to enable semantic search.',
+    prerequisite: ['sync_outline'],
+    tips: 'Run sync_outline first to enable semantic search.',
   },
   summarize_document: {
     prerequisite: ['search_documents', 'get_document_id_from_title'],
@@ -545,14 +545,14 @@ Use with caution.
 EXAMPLE: { "documentIds": ["uuid1", "uuid2"], "permanent": false }`,
 
   // ========== Smart Features (AI-Powered) ==========
-  sync_knowledge: `Sync documents to vector store for AI-powered search and Q&A.
+  sync_outline: `Sync documents to vector store for AI-powered search and Q&A.
 
-CRITICAL: You MUST run this tool BEFORE using ask_wiki or find_related.
+CRITICAL: You MUST run this tool BEFORE using ask_outline or find_related.
 Indexes document content for semantic search using embeddings.
 
 Use this tool when you need to:
 - Enable AI-powered search
-- Prepare for ask_wiki queries
+- Prepare for ask_outline queries
 - Update the search index after document changes
 - Index a specific collection
 
@@ -562,9 +562,9 @@ EXAMPLES:
 
 NOTE: Requires ENABLE_SMART_FEATURES=true and OPENAI_API_KEY to be set.`,
 
-  ask_wiki: `Ask a question and get an AI-generated answer based on wiki content.
+  ask_outline: `Ask a question and get an AI-generated answer based on wiki content.
 
-CRITICAL: Run sync_knowledge first to index documents!
+CRITICAL: Run sync_outline first to index documents!
 Uses RAG (Retrieval Augmented Generation) to find relevant content and answer.
 
 Use this tool when you need to:
@@ -577,7 +577,7 @@ EXAMPLES:
 - Simple question: { "question": "What is our vacation policy?" }
 - Specific topic: { "question": "How do I set up the development environment?" }
 
-NOTE: Requires sync_knowledge to be run first. Requires ENABLE_SMART_FEATURES=true.`,
+NOTE: Requires sync_outline to be run first. Requires ENABLE_SMART_FEATURES=true.`,
 
   summarize_document: `Generate an AI-powered summary of a document.
 
@@ -610,7 +610,7 @@ NOTE: Requires ENABLE_SMART_FEATURES=true.`,
 
   find_related: `Find documents semantically related to a specific document.
 
-CRITICAL: Run sync_knowledge first to enable semantic search!
+CRITICAL: Run sync_outline first to enable semantic search!
 Uses vector similarity to find conceptually related documents.
 
 Use this tool when you need to:
@@ -623,7 +623,7 @@ EXAMPLES:
 - Default (5 results): { "documentId": "uuid" }
 - More results: { "documentId": "uuid", "limit": 10 }
 
-NOTE: Requires sync_knowledge to be run first. Requires ENABLE_SMART_FEATURES=true.`,
+NOTE: Requires sync_outline to be run first. Requires ENABLE_SMART_FEATURES=true.`,
 
   generate_diagram: `Generate a Mermaid diagram from a text description.
 
@@ -704,7 +704,7 @@ const ANNOTATIONS = {
   unarchive_document: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
   restore_document: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
   batch_create_documents: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
-  sync_knowledge: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
+  sync_outline: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
 
   // Write tools (destructive - modifies existing data)
   update_document: { readOnlyHint: false, destructiveHint: true, idempotentHint: false },
@@ -721,7 +721,7 @@ const ANNOTATIONS = {
   batch_delete_documents: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
 
   // AI tools (may access external services)
-  ask_wiki: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
+  ask_outline: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
   summarize_document: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
   suggest_tags: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
   find_related: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
@@ -774,8 +774,8 @@ export const allTools: ToolDefinition[] = [
   createTool('batch_delete_documents', DESCRIPTIONS.batch_delete_documents, 'batch_delete_documents', ANNOTATIONS.batch_delete_documents),
 
   // ========== Smart Features (AI-Powered) ==========
-  createTool('sync_knowledge', DESCRIPTIONS.sync_knowledge, 'sync_knowledge', ANNOTATIONS.sync_knowledge),
-  createTool('ask_wiki', DESCRIPTIONS.ask_wiki, 'ask_wiki', ANNOTATIONS.ask_wiki),
+  createTool('sync_outline', DESCRIPTIONS.sync_outline, 'sync_outline', ANNOTATIONS.sync_outline),
+  createTool('ask_outline', DESCRIPTIONS.ask_outline, 'ask_outline', ANNOTATIONS.ask_outline),
   createTool('summarize_document', DESCRIPTIONS.summarize_document, 'summarize_document', ANNOTATIONS.summarize_document),
   createTool('suggest_tags', DESCRIPTIONS.suggest_tags, 'suggest_tags', ANNOTATIONS.suggest_tags),
   createTool('find_related', DESCRIPTIONS.find_related, 'find_related', ANNOTATIONS.find_related),

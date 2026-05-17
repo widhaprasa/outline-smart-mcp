@@ -73,19 +73,19 @@ async function main() {
 
     // Test 2: Sync Knowledge
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('📚 Test 2: sync_knowledge');
+    console.log('📚 Test 2: sync_outline');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    const syncResult = await handlers.sync_knowledge({});
+    const syncResult = await handlers.sync_outline({});
     console.log('Result:', JSON.stringify(syncResult, null, 2));
     console.log();
 
     // Test 3: Ask Wiki
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('❓ Test 3: ask_wiki');
+    console.log('❓ Test 3: ask_outline');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     const question = '이 위키에는 어떤 내용이 있나요?';
     console.log(`Question: ${question}`);
-    const askResult = await handlers.ask_wiki({ question });
+    const askResult = await handlers.ask_outline({ question });
     console.log('Result:', JSON.stringify(askResult, null, 2));
     console.log();
 

@@ -13,7 +13,7 @@ LLMが構造化されたAPI呼び出しを通じて[Outline](https://www.getoutl
 
 | 機能 | 説明 |
 |------|------|
-| `ask_wiki` | 自然言語で質問し、ウィキコンテンツに基づいた回答を取得（RAG） |
+| `ask_outline` | 自然言語で質問し、ウィキコンテンツに基づいた回答を取得（RAG） |
 | `find_related` | キーワードではなく意味的に類似したドキュメントを検索 |
 | `summarize_document` | 長いドキュメントの要約を生成 |
 | `suggest_tags` | コンテンツ分析に基づくタグ提案 |
@@ -34,7 +34,7 @@ LLMが構造化されたAPI呼び出しを通じて[Outline](https://www.getoutl
 
 ```
 ユーザー: 「リモートワークのポリシーは？」
-→ ask_wikiがウィキを検索し、ソースリンク付きで回答
+→ ask_outlineがウィキを検索し、ソースリンク付きで回答
 
 ユーザー: 「オンボーディングガイドに関連するドキュメントを探して」
 → find_relatedがキーワードではなく意味的に類似したドキュメントを返す
@@ -311,8 +311,8 @@ AI搭載機能（RAG Q&A、要約など）を有効にするには、設定に�
 | ツール | 説明 |
 |--------|------|
 | `smart_status` | ステータスとインデックス数を確認 |
-| `sync_knowledge` | ベクターデータベースにドキュメントを同期 |
-| `ask_wiki` | ウィキコンテンツベースのRAG Q&A |
+| `sync_outline` | ベクターデータベースにドキュメントを同期 |
+| `ask_outline` | ウィキコンテンツベースのRAG Q&A |
 | `summarize_document` | AI要約を生成 |
 | `suggest_tags` | AIタグ提案 |
 | `find_related` | 意味的に関連するドキュメントを検索 |
@@ -322,10 +322,10 @@ AI搭載機能（RAG Q&A、要約など）を有効にするには、設定に�
 
 ```bash
 # 1. まずウィキドキュメントを同期
-sync_knowledge
+sync_outline
 
 # 2. ウィキについて質問
-ask_wiki: "デプロイプロセスは何ですか？"
+ask_outline: "デプロイプロセスは何ですか？"
 
 # 3. 長いドキュメントを要約
 summarize_document: { documentId: "doc-id", language: "Japanese" }

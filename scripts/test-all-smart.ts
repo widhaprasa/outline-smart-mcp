@@ -51,20 +51,20 @@ async function main() {
 
     // 2. Sync Knowledge (이미 동기화됨)
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('📚 2. sync_knowledge (문서 동기화)');
+    console.log('📚 2. sync_outline (문서 동기화)');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     // 이미 동기화된 경우 스킵
     if (status1.indexedChunks > 100) {
       console.log(`이미 ${status1.indexedChunks}개 청크가 인덱싱되어 있습니다. 스킵합니다.`);
     } else {
-      const syncResult = await handlers.sync_knowledge({});
+      const syncResult = await handlers.sync_outline({});
       console.log(JSON.stringify(syncResult, null, 2));
     }
     console.log();
 
     // 3. Ask Wiki - 다양한 질문 테스트
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('❓ 3. ask_wiki (RAG 질문 답변)');
+    console.log('❓ 3. ask_outline (RAG 질문 답변)');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     const questions = [
@@ -75,7 +75,7 @@ async function main() {
 
     for (const q of questions) {
       console.log(`\n💬 Q: ${q}`);
-      const answer = await handlers.ask_wiki({ question: q });
+      const answer = await handlers.ask_outline({ question: q });
       console.log(`📝 A: ${answer.answer?.substring(0, 500)}...`);
       console.log(`📎 Sources: ${answer.sources?.map((s: {title: string}) => s.title).join(', ')}`);
     }

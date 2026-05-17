@@ -493,8 +493,8 @@ export const toolSchemas = {
   batch_archive_documents: batchArchiveDocumentsSchema,
   batch_delete_documents: batchDeleteDocumentsSchema,
   // Smart Features
-  sync_knowledge: syncKnowledgeSchema,
-  ask_wiki: askWikiSchema,
+  sync_outline: syncKnowledgeSchema,
+  ask_outline: askWikiSchema,
   summarize_document: summarizeDocumentSchema,
   suggest_tags: suggestTagsSchema,
   find_related: findRelatedSchema,

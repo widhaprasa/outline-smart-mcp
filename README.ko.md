@@ -13,7 +13,7 @@ LLM이 구조화된 API 호출을 통해 [Outline](https://www.getoutline.com/) 
 
 | 기능 | 설명 |
 |------|------|
-| `ask_wiki` | 자연어로 질문하면 위키 내용 기반으로 답변 (RAG) |
+| `ask_outline` | 자연어로 질문하면 위키 내용 기반으로 답변 (RAG) |
 | `find_related` | 키워드가 아닌 의미 기반으로 유사 문서 검색 |
 | `summarize_document` | 긴 문서 요약 생성 |
 | `suggest_tags` | 내용 분석 기반 태그 제안 |
@@ -34,7 +34,7 @@ LLM이 구조화된 API 호출을 통해 [Outline](https://www.getoutline.com/) 
 
 ```
 사용자: "재택근무 정책이 뭐야?"
-→ ask_wiki가 위키를 검색해서 출처 링크와 함께 답변 반환
+→ ask_outline가 위키를 검색해서 출처 링크와 함께 답변 반환
 
 사용자: "온보딩 가이드와 관련된 문서 찾아줘"
 → find_related가 키워드가 아닌 의미 기반으로 유사 문서 반환
@@ -311,8 +311,8 @@ AI 기반 기능(RAG Q&A, 요약 등)을 활성화하려면 설정에 다음을 
 | 도구 | 설명 |
 |------|------|
 | `smart_status` | 상태 및 인덱싱 수 확인 |
-| `sync_knowledge` | 벡터 데이터베이스에 문서 동기화 |
-| `ask_wiki` | 위키 콘텐츠 기반 RAG Q&A |
+| `sync_outline` | 벡터 데이터베이스에 문서 동기화 |
+| `ask_outline` | 위키 콘텐츠 기반 RAG Q&A |
 | `summarize_document` | AI 요약 생성 |
 | `suggest_tags` | AI 태그 제안 |
 | `find_related` | 의미적으로 관련된 문서 찾기 |
@@ -322,10 +322,10 @@ AI 기반 기능(RAG Q&A, 요약 등)을 활성화하려면 설정에 다음을 
 
 ```bash
 # 1. 먼저 위키 문서 동기화
-sync_knowledge
+sync_outline
 
 # 2. 위키에 대해 질문
-ask_wiki: "배포 프로세스는 무엇인가요?"
+ask_outline: "배포 프로세스는 무엇인가요?"
 
 # 3. 긴 문서 요약
 summarize_document: { documentId: "doc-id", language: "Korean" }

@@ -48,6 +48,8 @@ export class VectorStore implements IVectorStore {
       text: '',
       title: '',
       url: '',
+      documentId: '',
+      updatedAt: new Date().toISOString(),
     };
   }
 

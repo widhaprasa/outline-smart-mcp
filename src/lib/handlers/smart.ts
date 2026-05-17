@@ -64,7 +64,7 @@ export function createSmartHandlers({ apiClient, apiCall, config, brain }: AppCo
             documentId: doc.id,
             error: errorMessage,
           });
-          console.error(`[sync_knowledge] Failed to fetch document ${doc.id}: ${errorMessage}`);
+          console.error(`[sync_outline] Failed to fetch document ${doc.id}: ${errorMessage}`);
         }
       }
     }
@@ -81,7 +81,7 @@ export function createSmartHandlers({ apiClient, apiCall, config, brain }: AppCo
      *
      * Performance: Uses parallel batching (10 docs at a time) to speed up sync
      */
-    async sync_knowledge(args: { collectionId?: string }) {
+    async sync_outline(args: { collectionId?: string }) {
       if (!brain.isEnabled()) {
         return { error: ERROR_MESSAGES.SMART_FEATURES_DISABLED };
       }
@@ -129,7 +129,7 @@ export function createSmartHandlers({ apiClient, apiCall, config, brain }: AppCo
     /**
      * Ask a question and get an answer based on wiki content
      */
-    async ask_wiki(args: { question: string }) {
+    async ask_outline(args: { question: string }) {
       if (!brain.isEnabled()) {
         return { error: ERROR_MESSAGES.SMART_FEATURES_DISABLED };
       }

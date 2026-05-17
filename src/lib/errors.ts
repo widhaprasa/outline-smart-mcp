@@ -34,7 +34,7 @@ const CONTEXT_HINTS: Record<string, string> = {
   invalid_parent:
     'The parent document ID is invalid. Use get_collection_structure to see the document hierarchy.',
   sync_required:
-    'Smart features require sync_knowledge to be run first. Run sync_knowledge before using ask_wiki or find_related.',
+    'Smart features require sync_outline to be run first. Run sync_outline before using ask_outline or find_related.',
   smart_features_disabled:
     'Smart features are disabled. Set ENABLE_SMART_FEATURES=true and provide OPENAI_API_KEY to enable.',
 };

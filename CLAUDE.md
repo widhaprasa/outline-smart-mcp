@@ -128,7 +128,7 @@ echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":
 Smart features require:
 - `ENABLE_SMART_FEATURES=true`
 - `OPENAI_API_KEY` environment variable
-- Running `sync_knowledge` before `ask_wiki` or `find_related`
+- Running `sync_outline` before `ask_outline` or `find_related`
 
 ## File Modification Guidelines
 

@@ -13,7 +13,7 @@ Most Outline MCP servers provide basic API wrappers. This one adds optional **Sm
 
 | Feature | What it does |
 |---------|--------------|
-| `ask_wiki` | Ask questions in natural language, get answers based on your wiki content (RAG) |
+| `ask_outline` | Ask questions in natural language, get answers based on your wiki content (RAG) |
 | `find_related` | Find semantically similar documents, not just keyword matches |
 | `summarize_document` | Generate summaries of long documents |
 | `suggest_tags` | Get tag suggestions based on content analysis |
@@ -34,7 +34,7 @@ Smart features require `ENABLE_SMART_FEATURES=true` and an OpenAI API key. Witho
 
 ```
 User: "What's our policy on remote work?"
-→ ask_wiki searches your wiki and returns an answer with source links
+→ ask_outline searches your wiki and returns an answer with source links
 
 User: "Find documents related to the onboarding guide"
 → find_related returns semantically similar docs (not just keyword matches)
@@ -311,8 +311,8 @@ Requires `ENABLE_SMART_FEATURES=true` and `OPENAI_API_KEY`.
 | Tool | Description |
 |------|-------------|
 | `smart_status` | Check status and indexed count |
-| `sync_knowledge` | Sync docs to vector database |
-| `ask_wiki` | RAG-based Q&A on wiki content |
+| `sync_outline` | Sync docs to vector database |
+| `ask_outline` | RAG-based Q&A on wiki content |
 | `summarize_document` | Generate AI summary |
 | `suggest_tags` | AI-suggested tags |
 | `find_related` | Find semantically related docs |
@@ -322,10 +322,10 @@ Requires `ENABLE_SMART_FEATURES=true` and `OPENAI_API_KEY`.
 
 ```bash
 # 1. First, sync your wiki documents
-sync_knowledge
+sync_outline
 
 # 2. Ask questions about your wiki
-ask_wiki: "What is our deployment process?"
+ask_outline: "What is our deployment process?"
 
 # 3. Summarize long documents
 summarize_document: { documentId: "doc-id", language: "Korean" }

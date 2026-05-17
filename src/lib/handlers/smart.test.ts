@@ -69,7 +69,7 @@ describe('Smart Handlers', () => {
     handlers = createSmartHandlers(ctx);
   });
 
-  describe('sync_knowledge', () => {
+  describe('sync_outline', () => {
     test('should sync documents successfully', async () => {
       // Mock document list
       mockApiClient.post
@@ -87,7 +87,7 @@ describe('Smart Handlers', () => {
           data: { id: 'doc2', title: 'Doc 2', text: 'Content 2', url: '/doc/doc2', collectionId: 'col1' },
         });
 
-      const result = await handlers.sync_knowledge({});
+      const result = await handlers.sync_outline({});
 
       expect(result.documents).toBe(2);
       expect(result.chunks).toBe(10);
@@ -97,7 +97,7 @@ describe('Smart Handlers', () => {
     test('should handle empty document list', async () => {
       mockApiClient.post.mockResolvedValueOnce({ data: [] });
 
-      const result = await handlers.sync_knowledge({});
+      const result = await handlers.sync_outline({});
 
       expect(result.message).toContain('No documents found');
       expect(result.synced).toBe(0);
@@ -112,7 +112,7 @@ describe('Smart Handlers', () => {
           data: { id: 'doc1', title: 'Doc 1', text: 'Content 1', url: '/doc/doc1', collectionId: 'col1' },
         });
 
-      await handlers.sync_knowledge({ collectionId: 'col1' });
+      await handlers.sync_outline({ collectionId: 'col1' });
 
       expect(mockApiClient.post).toHaveBeenCalledWith('/documents.list', {
         limit: 100,
@@ -133,15 +133,15 @@ describe('Smart Handlers', () => {
         })
         .mockRejectedValueOnce(new Error('Fetch failed'));
 
-      const result = await handlers.sync_knowledge({});
+      const result = await handlers.sync_outline({});
 
       expect(result.errors).toBe(1);
     });
   });
 
-  describe('ask_wiki', () => {
+  describe('ask_outline', () => {
     test('should return answer with sources', async () => {
-      const result = await handlers.ask_wiki({ question: 'What is the meaning of life?' });
+      const result = await handlers.ask_outline({ question: 'What is the meaning of life?' });
 
       expect(result.answer).toBe('The answer is 42.');
       expect(result.sources).toHaveLength(1);
@@ -262,7 +262,7 @@ describe('Smart Handlers', () => {
       };
 
       const disabledHandlers = createSmartHandlers(disabledCtx);
-      const result = await disabledHandlers.sync_knowledge({});
+      const result = await disabledHandlers.sync_outline({});
 
       expect(result.error).toContain('Smart features are disabled');
     });

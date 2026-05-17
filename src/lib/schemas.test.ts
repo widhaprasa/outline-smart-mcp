@@ -148,8 +148,8 @@ describe('toolSchemas', () => {
   });
 
   test('should have schema for smart features', () => {
-    expect(toolSchemas.sync_knowledge).toBeDefined();
-    expect(toolSchemas.ask_wiki).toBeDefined();
+    expect(toolSchemas.sync_outline).toBeDefined();
+    expect(toolSchemas.ask_outline).toBeDefined();
     expect(toolSchemas.summarize_document).toBeDefined();
     expect(toolSchemas.suggest_tags).toBeDefined();
     expect(toolSchemas.find_related).toBeDefined();
