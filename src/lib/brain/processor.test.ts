@@ -47,6 +47,14 @@ describe('LlmProcessor', () => {
     expect(summary).toBe('Mock response');
   });
 
+  test('should support Bahasa Indonesia summaries', async () => {
+    const summary = await processor.summarize('Dokumen tentang cuti tahunan', 'Bahasa Indonesia');
+
+    expect(summary).toBe('Mock response');
+    expect(vi.mocked(processor['client']!.chat.completions.create).mock.calls.at(-1)?.[0].messages[0].content)
+      .toContain('Bahasa Indonesia');
+  });
+
   test('should suggest tags', async () => {
     const mockProcessor = new LlmProcessor('test-api-key');
 
@@ -58,6 +66,8 @@ describe('LlmProcessor', () => {
     const tags = await mockProcessor.suggestTags('Document about technology');
 
     expect(Array.isArray(tags)).toBe(true);
+    expect(vi.mocked(mockProcessor['client']!.chat.completions.create).mock.calls.at(-1)?.[0].messages[0].content)
+      .toContain('same language as the document');
   });
 
   test('should answer from context', async () => {
@@ -73,5 +83,7 @@ describe('LlmProcessor', () => {
     const diagram = await processor.generateMermaid('User login flow');
 
     expect(diagram).toBe('Mock response');
+    expect(vi.mocked(processor['client']!.chat.completions.create).mock.calls.at(-1)?.[0].messages[0].content)
+      .toContain('Bahasa Indonesia');
   });
 });

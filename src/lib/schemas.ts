@@ -376,7 +376,7 @@ export const askWikiSchema = z.object({
   question: z
     .string()
     .min(1, 'Question is required')
-    .describe('Natural language question to ask about your wiki content (e.g., "What is our vacation policy?").'),
+    .describe('Natural language question to ask about your wiki content. Supports English, Bahasa Indonesia, and other languages (e.g., "What is our vacation policy?", "Apa kebijakan cuti kami?").'),
 });
 
 export const summarizeDocumentSchema = z.object({
@@ -385,7 +385,7 @@ export const summarizeDocumentSchema = z.object({
   language: z
     .string()
     .optional()
-    .describe('Optional: Language for the summary (e.g., "Korean", "Japanese"). Defaults to English.'),
+    .describe('Optional: Language for the summary (e.g., "Bahasa Indonesia", "Korean", "Japanese").'),
 });
 
 export const suggestTagsSchema = z.object({
@@ -409,7 +409,7 @@ export const generateDiagramSchema = z.object({
   description: z
     .string()
     .min(1, 'Description is required')
-    .describe('Text description of the diagram to generate (e.g., "User login flow with authentication").'),
+    .describe('Text description of the diagram to generate. Supports English, Bahasa Indonesia, and other languages (e.g., "User login flow with authentication", "Alur login pengguna dengan autentikasi").'),
 });
 
 export const smartStatusSchema = z.object({});

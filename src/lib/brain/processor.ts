@@ -53,6 +53,7 @@ Use ${language} language. Be concise and focus on key information.`;
   async suggestTags(text: string): Promise<string[]> {
     const prompt = `Analyze the following document and suggest 3-5 relevant tags.
 Output ONLY comma-separated tags without explanation.
+Return tags in the same language as the document.
 Example: Marketing, Q1 Report, Strategy`;
 
     const result = await this.complete(prompt, text.substring(0, LLM.MAX_TAG_ANALYSIS_CHARS));
@@ -81,6 +82,7 @@ Question: ${question}`;
   async generateMermaid(description: string): Promise<string> {
     const prompt = `Convert the following process or flow description into a Mermaid.js diagram.
 Output ONLY the Mermaid code block, no explanation.
+The description may be written in Bahasa Indonesia or other languages.
 Use appropriate diagram type (flowchart, sequence, etc.) based on the content.`;
 
     return this.complete(prompt, description);

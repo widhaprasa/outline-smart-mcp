@@ -549,6 +549,7 @@ EXAMPLE: { "documentIds": ["uuid1", "uuid2"], "permanent": false }`,
 
 CRITICAL: You MUST run this tool BEFORE using ask_outline or find_related.
 Indexes document content for semantic search using embeddings.
+Indexes multilingual content, including Bahasa Indonesia documents.
 
 Use this tool when you need to:
 - Enable AI-powered search
@@ -566,6 +567,7 @@ NOTE: Requires ENABLE_SMART_FEATURES=true and OPENAI_API_KEY to be set.`,
 
 CRITICAL: Run sync_outline first to index documents!
 Uses RAG (Retrieval Augmented Generation) to find relevant content and answer.
+Answers are returned in the same language as the question, including Bahasa Indonesia.
 
 Use this tool when you need to:
 - Get answers from your knowledge base
@@ -575,6 +577,7 @@ Use this tool when you need to:
 
 EXAMPLES:
 - Simple question: { "question": "What is our vacation policy?" }
+- Bahasa Indonesia: { "question": "Apa kebijakan cuti kami?" }
 - Specific topic: { "question": "How do I set up the development environment?" }
 
 NOTE: Requires sync_outline to be run first. Requires ENABLE_SMART_FEATURES=true.`,
@@ -583,6 +586,7 @@ NOTE: Requires sync_outline to be run first. Requires ENABLE_SMART_FEATURES=true
 
 IMPORTANT: Creates a concise summary of the document content.
 Optionally specify language for the summary.
+Use language: "Bahasa Indonesia" to get an Indonesian summary.
 
 Use this tool when you need to:
 - Get quick overview of long documents
@@ -591,6 +595,7 @@ Use this tool when you need to:
 
 EXAMPLES:
 - Default: { "documentId": "uuid" }
+- In Bahasa Indonesia: { "documentId": "uuid", "language": "Bahasa Indonesia" }
 - In Korean: { "documentId": "uuid", "language": "Korean" }
 
 NOTE: Requires ENABLE_SMART_FEATURES=true.`,
@@ -598,6 +603,7 @@ NOTE: Requires ENABLE_SMART_FEATURES=true.`,
   suggest_tags: `Get AI-suggested tags for a document based on its content.
 
 IMPORTANT: Analyzes document content and suggests relevant tags/keywords.
+Tags are generated in the same language as the document, including Bahasa Indonesia content.
 
 Use this tool when you need to:
 - Categorize documents
@@ -612,6 +618,7 @@ NOTE: Requires ENABLE_SMART_FEATURES=true.`,
 
 CRITICAL: Run sync_outline first to enable semantic search!
 Uses vector similarity to find conceptually related documents.
+Useful for multilingual knowledge bases, including Bahasa Indonesia content.
 
 Use this tool when you need to:
 - Discover related content
@@ -629,6 +636,7 @@ NOTE: Requires sync_outline to be run first. Requires ENABLE_SMART_FEATURES=true
 
 IMPORTANT: Creates Mermaid diagram code that can be embedded in Outline documents.
 Outline natively renders Mermaid diagrams.
+The description can be written in Bahasa Indonesia or other languages.
 
 Use this tool when you need to:
 - Create flowcharts
@@ -638,6 +646,7 @@ Use this tool when you need to:
 
 EXAMPLES:
 - Flowchart: { "description": "User login flow with authentication and redirect" }
+- Bahasa Indonesia: { "description": "Alur login pengguna dengan autentikasi dan pengalihan" }
 - Architecture: { "description": "Microservices architecture with API gateway" }
 
 NOTE: Requires ENABLE_SMART_FEATURES=true.`,
@@ -647,6 +656,7 @@ NOTE: Requires ENABLE_SMART_FEATURES=true.`,
 Use this tool to:
 - Verify smart features are working
 - Check how many documents are indexed
+- Confirm multilingual smart workflows, including Bahasa Indonesia content, are ready
 - Troubleshoot AI feature issues
 
 RETURNS: enabled status, indexed chunk count, and status message.`,
