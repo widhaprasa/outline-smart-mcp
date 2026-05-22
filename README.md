@@ -217,6 +217,8 @@ ChatGPT supports MCP through its desktop app. Add the server in **Settings** →
 | `MAX_RETRIES` | API retry attempts | No | `3` |
 | `RETRY_DELAY_MS` | Retry delay (ms) | No | `1000` |
 | `ENABLE_SMART_FEATURES` | Enable AI features | No | `false` |
+| `AUTO_SYNC_ENABLED` | Auto-sync Outline docs in background for smart features | No | `false` |
+| `AUTO_SYNC_INTERVAL_MINUTES` | Auto-sync interval in minutes | No | `15` |
 | `OPENAI_API_KEY` | OpenAI API key | No* | - |
 
 \* Required when `ENABLE_SMART_FEATURES=true`
@@ -235,12 +237,16 @@ To enable AI-powered features (RAG Q&A, summarization, etc.), add these to your 
         "OUTLINE_URL": "https://your-outline-instance.com",
         "OUTLINE_API_TOKEN": "ol_api_xxxxxxxxxxxxx",
         "ENABLE_SMART_FEATURES": "true",
+        "AUTO_SYNC_ENABLED": "true",
+        "AUTO_SYNC_INTERVAL_MINUTES": "15",
         "OPENAI_API_KEY": "sk-xxxxxxxxxxxxx"
       }
     }
   }
 }
 ```
+
+When auto-sync is enabled, the server refreshes the vector index every configured interval and also refreshes on-demand before semantic tools (such as `ask_outline` and `find_related`) when the index is stale.
 
 ## Tools
 

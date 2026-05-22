@@ -131,6 +131,8 @@ export function createTestContext(overrides: Partial<AppContext> = {}): AppConte
     MAX_RETRIES: 1,
     RETRY_DELAY_MS: 10,
     ENABLE_SMART_FEATURES: false,
+    AUTO_SYNC_ENABLED: false,
+    AUTO_SYNC_INTERVAL_MINUTES: 15,
   };
 
   const config = overrides.config ?? defaultConfig;

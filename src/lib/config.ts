@@ -38,6 +38,15 @@ const envSchema = z.object({
     .string()
     .transform((val) => val === 'true')
     .default('false'),
+  AUTO_SYNC_ENABLED: z
+    .string()
+    .transform((val) => val === 'true')
+    .default('false'),
+  AUTO_SYNC_INTERVAL_MINUTES: z
+    .string()
+    .transform((val) => parseInt(val, 10))
+    .pipe(z.number().int().min(1).max(1440))
+    .default('15'),
   OPENAI_API_KEY: z.string().optional(),
 });
 

@@ -67,6 +67,17 @@ export const configSchema = z.object({
     .boolean()
     .default(false)
     .describe('Enable AI-powered features (requires OpenAI API key)'),
+  autoSyncEnabled: z
+    .boolean()
+    .default(false)
+    .describe('Enable automatic background sync for smart features'),
+  autoSyncIntervalMinutes: z
+    .number()
+    .int()
+    .min(1)
+    .max(1440)
+    .default(15)
+    .describe('Auto-sync interval in minutes (default: 15)'),
   openaiApiKey: z
     .string()
     .optional()
@@ -199,6 +210,8 @@ export default function createServer({ config: smitheryConfig }: { config: Smith
     READ_ONLY: String(smitheryConfig.readOnly),
     DISABLE_DELETE: String(smitheryConfig.disableDelete),
     ENABLE_SMART_FEATURES: String(smitheryConfig.enableSmartFeatures),
+    AUTO_SYNC_ENABLED: String(smitheryConfig.autoSyncEnabled),
+    AUTO_SYNC_INTERVAL_MINUTES: String(smitheryConfig.autoSyncIntervalMinutes),
     OPENAI_API_KEY: smitheryConfig.openaiApiKey,
   };
 
@@ -243,6 +256,8 @@ async function main() {
   console.error(`Read-only mode: ${config.READ_ONLY}`);
   console.error(`Delete disabled: ${config.DISABLE_DELETE}`);
   console.error(`Smart features: ${config.ENABLE_SMART_FEATURES}`);
+  console.error(`Auto sync enabled: ${config.AUTO_SYNC_ENABLED}`);
+  console.error(`Auto sync interval: ${config.AUTO_SYNC_INTERVAL_MINUTES} minutes`);
 }
 
 main().catch((error) => {

@@ -18,8 +18,24 @@ interface FetchError {
   error: string;
 }
 
+interface SyncOutlineResult {
+  message: string;
+  documents?: number;
+  chunks?: number;
+  skipped?: number;
+  updated?: number;
+  synced?: number;
+  errors?: number;
+  errorDetails?: FetchError[];
+}
+
 export function createSmartHandlers({ apiClient, apiCall, config, brain }: AppContext) {
   const baseUrl = config.OUTLINE_URL;
+  const autoSyncEnabled = config.AUTO_SYNC_ENABLED && brain.isEnabled();
+  const autoSyncIntervalMs = config.AUTO_SYNC_INTERVAL_MINUTES * 60 * 1000;
+
+  let syncInFlight: Promise<SyncOutlineResult> | null = null;
+  let lastFullSyncAt = 0;
 
   /**
    * Fetch documents in parallel batches to avoid overwhelming the API
@@ -72,6 +88,91 @@ export function createSmartHandlers({ apiClient, apiCall, config, brain }: AppCo
     return { wikiDocs, errors };
   }
 
+  async function syncOutlineInternal(args: { collectionId?: string }): Promise<SyncOutlineResult> {
+    // Step 1: Fetch document list from Outline
+    const payload: Record<string, unknown> = { limit: 100 };
+    if (args.collectionId) {
+      payload.collectionId = args.collectionId;
+    }
+
+    const { data: docList } = await apiCall(() =>
+      apiClient.post<OutlineDocument[]>('/documents.list', payload)
+    );
+
+    if (!docList || docList.length === 0) {
+      return { message: ERROR_MESSAGES.NO_DOCUMENTS_FOUND, synced: 0 };
+    }
+
+    // Step 2: Fetch full content for each document in parallel batches
+    const { wikiDocs, errors } = await fetchDocumentsBatch(docList);
+
+    if (wikiDocs.length === 0) {
+      return {
+        message: ERROR_MESSAGES.NO_DOCUMENTS_WITH_CONTENT,
+        synced: 0,
+        errors: errors.length,
+        errorDetails: errors.slice(0, 5),
+      };
+    }
+
+    // Step 3: Sync to brain (vectorize) - incremental sync
+    const result = await brain.syncDocuments(wikiDocs);
+
+    if (!args.collectionId) {
+      lastFullSyncAt = Date.now();
+    }
+
+    return {
+      message: `Synced ${result.documents} new/updated documents (${result.chunks} chunks). Skipped ${result.skipped || 0} unchanged.`,
+      documents: result.documents,
+      chunks: result.chunks,
+      skipped: result.skipped || 0,
+      updated: result.updated || 0,
+      errors: errors.length,
+      ...(errors.length > 0 && { errorDetails: errors.slice(0, 5) }),
+    };
+  }
+
+  async function runSyncWithLock(args: { collectionId?: string }): Promise<SyncOutlineResult> {
+    if (syncInFlight) {
+      return syncInFlight;
+    }
+
+    syncInFlight = syncOutlineInternal(args).finally(() => {
+      syncInFlight = null;
+    });
+
+    return syncInFlight;
+  }
+
+  async function ensureAutoSynced(): Promise<void> {
+    if (!autoSyncEnabled) {
+      return;
+    }
+
+    const now = Date.now();
+    if (now - lastFullSyncAt < autoSyncIntervalMs) {
+      return;
+    }
+
+    try {
+      await runSyncWithLock({});
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`[auto_sync] Failed: ${message}`);
+    }
+  }
+
+  if (autoSyncEnabled) {
+    const timer = setInterval(() => {
+      void ensureAutoSynced();
+    }, autoSyncIntervalMs);
+
+    if (typeof timer.unref === 'function') {
+      timer.unref();
+    }
+  }
+
   return {
     /**
      * Sync all documents to vector store for RAG
@@ -86,44 +187,7 @@ export function createSmartHandlers({ apiClient, apiCall, config, brain }: AppCo
         return { error: ERROR_MESSAGES.SMART_FEATURES_DISABLED };
       }
 
-      // Step 1: Fetch document list from Outline
-      const payload: Record<string, unknown> = { limit: 100 };
-      if (args.collectionId) {
-        payload.collectionId = args.collectionId;
-      }
-
-      const { data: docList } = await apiCall(() =>
-        apiClient.post<OutlineDocument[]>('/documents.list', payload)
-      );
-
-      if (!docList || docList.length === 0) {
-        return { message: ERROR_MESSAGES.NO_DOCUMENTS_FOUND, synced: 0 };
-      }
-
-      // Step 2: Fetch full content for each document in parallel batches
-      const { wikiDocs, errors } = await fetchDocumentsBatch(docList);
-
-      if (wikiDocs.length === 0) {
-        return {
-          message: ERROR_MESSAGES.NO_DOCUMENTS_WITH_CONTENT,
-          synced: 0,
-          errors: errors.length,
-          errorDetails: errors.slice(0, 5), // Return first 5 errors for debugging
-        };
-      }
-
-      // Step 3: Sync to brain (vectorize) - incremental sync
-      const result = await brain.syncDocuments(wikiDocs);
-
-      return {
-        message: `Synced ${result.documents} new/updated documents (${result.chunks} chunks). Skipped ${result.skipped || 0} unchanged.`,
-        documents: result.documents,
-        chunks: result.chunks,
-        skipped: result.skipped || 0,
-        updated: result.updated || 0,
-        errors: errors.length,
-        ...(errors.length > 0 && { errorDetails: errors.slice(0, 5) }),
-      };
+      return runSyncWithLock(args);
     },
 
     /**
@@ -133,6 +197,8 @@ export function createSmartHandlers({ apiClient, apiCall, config, brain }: AppCo
       if (!brain.isEnabled()) {
         return { error: ERROR_MESSAGES.SMART_FEATURES_DISABLED };
       }
+
+      await ensureAutoSynced();
 
       const { answer, sources } = await brain.ask(args.question);
 
@@ -224,6 +290,8 @@ export function createSmartHandlers({ apiClient, apiCall, config, brain }: AppCo
       if (!brain.isEnabled()) {
         return { error: ERROR_MESSAGES.SMART_FEATURES_DISABLED };
       }
+
+      await ensureAutoSynced();
 
       // Fetch document
       const { data } = await apiCall(() =>
