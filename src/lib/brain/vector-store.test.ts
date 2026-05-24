@@ -10,6 +10,7 @@ import fs from 'fs';
 vi.mock('@lancedb/lancedb', () => {
   const mockTable = {
     add: vi.fn().mockResolvedValue({}),
+    delete: vi.fn().mockResolvedValue({}),
     vectorSearch: vi.fn().mockReturnValue({
       limit: vi.fn().mockReturnValue({
         toArray: vi.fn().mockResolvedValue([
@@ -131,5 +132,11 @@ describe('VectorStore', () => {
       ]),
       { mode: 'overwrite' }
     );
+  });
+
+  test('should delete by document ID with quoted column name', async () => {
+    await store.deleteByDocumentId('doc-123');
+
+    expect(mockTable.delete).toHaveBeenCalledWith('"documentId" = \'doc-123\'');
   });
 });

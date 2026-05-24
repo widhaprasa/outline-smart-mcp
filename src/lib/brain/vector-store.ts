@@ -114,7 +114,10 @@ export class VectorStore implements IVectorStore {
     if (!this.db) await this.init();
 
     const table = await this.db!.openTable(this.tableName);
-    await table.delete(`documentId = '${documentId}'`);
+    // DataFusion/Lance SQL parsing is case-sensitive for camelCase column names.
+    // Quote the identifier to prevent implicit lowercasing to "documentid".
+    const escapedDocumentId = documentId.replace(/'/g, "''");
+    await table.delete(`"documentId" = '${escapedDocumentId}'`);
   }
 
   async search(queryVector: number[], limit: number = SEARCH.DEFAULT_LIMIT): Promise<SearchResult[]> {
