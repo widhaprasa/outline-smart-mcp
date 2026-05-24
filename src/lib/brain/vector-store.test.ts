@@ -86,7 +86,42 @@ describe('VectorStore', () => {
     const count = await store.save(records);
 
     expect(count).toBe(1);
-    expect(mockTable.add).toHaveBeenCalledWith(records, { mode: 'overwrite' });
+    expect(mockTable.add).toHaveBeenCalledWith(
+      [
+        expect.objectContaining({
+          id: 'doc1-chunk-0',
+          collectionId: '',
+          parentDocumentId: '',
+        }),
+      ],
+      { mode: 'overwrite' }
+    );
+  });
+
+  test('should normalize null parentDocumentId during upsert', async () => {
+    const records: VectorRecord[] = [
+      {
+        id: 'doc2-chunk-0',
+        vector: Array(1536).fill(0.2),
+        text: 'Moved document content',
+        title: 'Moved Document',
+        url: 'http://example.com/doc2',
+        documentId: 'doc2',
+        collectionId: 'col-1',
+        parentDocumentId: null,
+      },
+    ];
+
+    const count = await store.upsert(records);
+
+    expect(count).toBe(1);
+    expect(mockTable.add).toHaveBeenCalledWith([
+      expect.objectContaining({
+        id: 'doc2-chunk-0',
+        collectionId: 'col-1',
+        parentDocumentId: '',
+      }),
+    ]);
   });
 
   test('should return 0 for empty records', async () => {

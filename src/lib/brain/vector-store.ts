@@ -56,8 +56,17 @@ export class VectorStore implements IVectorStore {
       url: '',
       documentId: '',
       collectionId: '',
-      parentDocumentId: null,
+      parentDocumentId: '',
       updatedAt: new Date().toISOString(),
+    };
+  }
+
+  private normalizeRecord(record: VectorRecord): VectorRecord {
+    return {
+      ...record,
+      collectionId: typeof record.collectionId === 'string' ? record.collectionId : '',
+      parentDocumentId:
+        typeof record.parentDocumentId === 'string' ? record.parentDocumentId : '',
     };
   }
 
@@ -67,9 +76,10 @@ export class VectorStore implements IVectorStore {
     if (records.length === 0) return 0;
 
     const table = await this.db!.openTable(this.tableName);
+    const normalizedRecords = records.map((record) => this.normalizeRecord(record));
 
     // Overwrite mode for simple sync
-    await table.add(records, { mode: 'overwrite' });
+    await table.add(normalizedRecords, { mode: 'overwrite' });
 
     return records.length;
   }
@@ -83,9 +93,10 @@ export class VectorStore implements IVectorStore {
     if (records.length === 0) return 0;
 
     const table = await this.db!.openTable(this.tableName);
+    const normalizedRecords = records.map((record) => this.normalizeRecord(record));
 
     // Add records (append mode)
-    await table.add(records);
+    await table.add(normalizedRecords);
 
     return records.length;
   }
@@ -114,13 +125,14 @@ export class VectorStore implements IVectorStore {
         const currentUpdatedAt = updatedAt || '';
 
         if (!existing || currentUpdatedAt >= existingUpdatedAt) {
+          const parentDocumentId = r.parentDocumentId as string | null | undefined;
+
           docMap.set(docId, {
             updatedAt: currentUpdatedAt,
             url: (r.url as string | undefined) || undefined,
             title: (r.title as string | undefined) || undefined,
             collectionId: (r.collectionId as string | undefined) || undefined,
-            parentDocumentId:
-              (r.parentDocumentId as string | null | undefined) ?? undefined,
+            parentDocumentId: parentDocumentId === '' ? null : parentDocumentId ?? undefined,
           });
         }
       }
