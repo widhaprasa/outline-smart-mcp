@@ -55,6 +55,8 @@ export class VectorStore implements IVectorStore {
       title: '',
       url: '',
       documentId: '',
+      collectionId: '',
+      parentDocumentId: null,
       updatedAt: new Date().toISOString(),
     };
   }
