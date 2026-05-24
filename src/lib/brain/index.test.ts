@@ -26,7 +26,7 @@ vi.mock('./vector-store.js', () => ({
     ]),
     count: vi.fn().mockResolvedValue(10),
     clear: vi.fn().mockResolvedValue(undefined),
-    getDocumentIds: vi.fn().mockResolvedValue(new Map()),
+    getDocumentSyncStates: vi.fn().mockResolvedValue(new Map()),
     deleteByDocumentId: vi.fn().mockResolvedValue(undefined),
   })),
 }));
@@ -108,6 +108,72 @@ describe('Brain', () => {
 
       await expect(disabledBrain.syncDocuments([])).rejects.toThrow('Smart features are disabled');
     });
+
+    test('should re-sync when metadata changed even if updatedAt is unchanged', async () => {
+      const store = {
+        init: vi.fn().mockResolvedValue(undefined),
+        save: vi.fn().mockResolvedValue(0),
+        upsert: vi.fn().mockResolvedValue(2),
+        search: vi.fn().mockResolvedValue([]),
+        count: vi.fn().mockResolvedValue(0),
+        clear: vi.fn().mockResolvedValue(undefined),
+        getDocumentSyncStates: vi.fn().mockResolvedValue(
+          new Map([
+            [
+              'doc1',
+              {
+                updatedAt: '2026-05-24T00:00:00.000Z',
+                url: 'https://wiki.example.com/doc/old-path',
+                title: 'Moved Doc',
+                collectionId: 'old-collection',
+                parentDocumentId: 'parent-old',
+              },
+            ],
+          ])
+        ),
+        deleteByDocumentId: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const deps = {
+        embeddings: {
+          isEnabled: () => true,
+          getDimensions: () => 1536,
+          getEmbedding: vi.fn().mockResolvedValue(Array(1536).fill(0.1)),
+          getEmbeddings: vi.fn().mockResolvedValue([
+            Array(1536).fill(0.1),
+            Array(1536).fill(0.1),
+          ]),
+        },
+        store,
+        processor: {
+          isEnabled: () => true,
+          summarize: vi.fn().mockResolvedValue('summary'),
+          suggestTags: vi.fn().mockResolvedValue([]),
+          answerFromContext: vi.fn().mockResolvedValue('answer'),
+          generateMermaid: vi.fn().mockResolvedValue('graph TD\nA-->B'),
+        },
+      };
+
+      const metadataBrain = new Brain({ enabled: true, openaiApiKey: 'test-key' }, deps);
+
+      const result = await metadataBrain.syncDocuments([
+        {
+          id: 'doc1',
+          title: 'Moved Doc',
+          text: 'Updated content',
+          url: 'https://wiki.example.com/doc/new-path',
+          collectionId: 'new-collection',
+          parentDocumentId: 'parent-new',
+          updatedAt: '2026-05-24T00:00:00.000Z',
+        },
+      ]);
+
+      expect(store.deleteByDocumentId).toHaveBeenCalledWith('doc1');
+      expect(store.upsert).toHaveBeenCalled();
+      expect(result.documents).toBe(1);
+      expect(result.updated).toBe(1);
+      expect(result.skipped).toBe(0);
+    });
   });
 
   describe('search', () => {
@@ -143,7 +209,7 @@ describe('Brain', () => {
         search: vi.fn().mockResolvedValue([]),
         count: vi.fn().mockResolvedValue(0),
         clear: vi.fn(),
-        getDocumentIds: vi.fn().mockResolvedValue(new Map()),
+        getDocumentSyncStates: vi.fn().mockResolvedValue(new Map()),
         deleteByDocumentId: vi.fn(),
       }) as never);
 
@@ -227,7 +293,7 @@ describe('createBrain factory', () => {
         search: vi.fn().mockResolvedValue([]),
         count: vi.fn().mockResolvedValue(0),
         clear: vi.fn().mockResolvedValue(undefined),
-        getDocumentIds: vi.fn().mockResolvedValue(new Map()),
+        getDocumentSyncStates: vi.fn().mockResolvedValue(new Map()),
         deleteByDocumentId: vi.fn().mockResolvedValue(undefined),
       },
       processor: {
