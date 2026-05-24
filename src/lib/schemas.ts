@@ -376,7 +376,7 @@ export const askWikiSchema = z.object({
   question: z
     .string()
     .min(1, 'Question is required')
-    .describe('Natural language question to ask about your wiki content. Supports English, Bahasa Indonesia, and other languages (e.g., "What is our vacation policy?", "Apa kebijakan cuti kami?").'),
+    .describe('Natural language question to ask about your Outline content. Supports English, Bahasa Indonesia, and other languages (e.g., "What is our vacation policy?", "Apa kebijakan cuti kami?").'),
 });
 
 export const summarizeDocumentSchema = z.object({

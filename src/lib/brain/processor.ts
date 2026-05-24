@@ -65,7 +65,7 @@ Example: Marketing, Q1 Report, Strategy`;
   }
 
   async answerFromContext(question: string, context: string): Promise<string> {
-    const prompt = `You are a helpful knowledge assistant for a company wiki (Outline).
+    const prompt = `You are a helpful knowledge assistant for a company knowledge base in Outline.
 Answer the user's question based ONLY on the provided context.
 If the information is not in the context, say you don't know.
 Always cite the document title(s) you referenced.

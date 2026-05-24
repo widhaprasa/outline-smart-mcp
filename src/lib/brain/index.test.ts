@@ -216,7 +216,7 @@ describe('Brain', () => {
       const newBrain = new Brain({ openaiApiKey: 'test-key', enabled: true });
       const result = await newBrain.ask('Unknown question');
 
-      expect(result.answer).toBe('No relevant documents found in the wiki.');
+      expect(result.answer).toBe('No relevant documents found in Outline.');
       expect(result.sources).toHaveLength(0);
     });
   });

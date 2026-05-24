@@ -48,7 +48,7 @@ export const ERROR_MESSAGES = {
   NO_CONTENT_TO_ANALYZE: 'Document has no content to analyze.',
   NO_DOCUMENTS_FOUND: 'No documents found to sync.',
   NO_DOCUMENTS_WITH_CONTENT: 'No documents with content found to sync.',
-  NO_RELEVANT_DOCUMENTS: 'No relevant documents found in the wiki.',
+  NO_RELEVANT_DOCUMENTS: 'No relevant documents found in Outline.',
 } as const;
 
 // Success Messages

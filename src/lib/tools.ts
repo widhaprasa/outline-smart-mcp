@@ -563,7 +563,7 @@ EXAMPLES:
 
 NOTE: Requires ENABLE_SMART_FEATURES=true and OPENAI_API_KEY to be set.`,
 
-  ask_outline: `Ask a question and get an AI-generated answer based on wiki content.
+  ask_outline: `Ask a question and get an AI-generated answer based on Outline content.
 
 CRITICAL: Run sync_outline first to index documents!
 Uses RAG (Retrieval Augmented Generation) to find relevant content and answer.
