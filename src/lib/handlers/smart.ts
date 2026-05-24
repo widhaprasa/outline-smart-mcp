@@ -69,6 +69,7 @@ export function createSmartHandlers({ apiClient, apiCall, config, brain }: AppCo
               text: fullDoc.text,
               url: `${baseUrl}${fullDoc.url}`,
               collectionId: fullDoc.collectionId,
+              parentDocumentId: fullDoc.parentDocumentId,
               updatedAt: fullDoc.updatedAt,
             });
           }
@@ -235,6 +236,7 @@ export function createSmartHandlers({ apiClient, apiCall, config, brain }: AppCo
         text: data.text,
         url: `${baseUrl}${data.url}`,
         collectionId: data.collectionId,
+        parentDocumentId: data.parentDocumentId,
         updatedAt: data.updatedAt,
       });
 
@@ -271,6 +273,7 @@ export function createSmartHandlers({ apiClient, apiCall, config, brain }: AppCo
         text: data.text,
         url: `${baseUrl}${data.url}`,
         collectionId: data.collectionId,
+        parentDocumentId: data.parentDocumentId,
         updatedAt: data.updatedAt,
       });
 
@@ -309,6 +312,7 @@ export function createSmartHandlers({ apiClient, apiCall, config, brain }: AppCo
         text: data.text,
         url: `${baseUrl}${data.url}`,
         collectionId: data.collectionId,
+        parentDocumentId: data.parentDocumentId,
         updatedAt: data.updatedAt,
       });
 

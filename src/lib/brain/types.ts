@@ -14,6 +14,7 @@ export interface WikiDocument {
   text: string;
   url?: string;
   collectionId?: string;
+  parentDocumentId?: string | null;
   updatedAt?: string;
 }
 
@@ -24,8 +25,18 @@ export interface VectorRecord {
   title: string;
   url: string;
   documentId?: string;
+  collectionId?: string;
+  parentDocumentId?: string | null;
   updatedAt?: string;
   [key: string]: unknown;
+}
+
+export interface DocumentSyncState {
+  updatedAt: string;
+  url?: string;
+  title?: string;
+  collectionId?: string;
+  parentDocumentId?: string | null;
 }
 
 export interface SearchResult {
@@ -95,7 +106,7 @@ export interface IVectorStore {
   search(queryVector: number[], limit?: number): Promise<SearchResult[]>;
   count(): Promise<number>;
   clear(): Promise<void>;
-  getDocumentIds(): Promise<Map<string, string>>;
+  getDocumentSyncStates(): Promise<Map<string, DocumentSyncState>>;
   deleteByDocumentId(documentId: string): Promise<void>;
 }
 

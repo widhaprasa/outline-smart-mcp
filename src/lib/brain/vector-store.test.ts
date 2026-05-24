@@ -11,6 +11,11 @@ vi.mock('@lancedb/lancedb', () => {
   const mockTable = {
     add: vi.fn().mockResolvedValue({}),
     delete: vi.fn().mockResolvedValue({}),
+    query: vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        toArray: vi.fn().mockResolvedValue([]),
+      }),
+    }),
     vectorSearch: vi.fn().mockReturnValue({
       limit: vi.fn().mockReturnValue({
         toArray: vi.fn().mockResolvedValue([
@@ -138,5 +143,40 @@ describe('VectorStore', () => {
     await store.deleteByDocumentId('doc-123');
 
     expect(mockTable.delete).toHaveBeenCalledWith('"documentId" = \'doc-123\'');
+  });
+
+  test('should return document sync states with latest metadata', async () => {
+    mockTable.query.mockReturnValueOnce({
+      select: vi.fn().mockReturnValue({
+        toArray: vi.fn().mockResolvedValue([
+          {
+            documentId: 'doc-1',
+            updatedAt: '2026-05-24T00:00:00.000Z',
+            url: 'https://wiki.example.com/doc/new',
+            title: 'Doc One',
+            collectionId: 'col-new',
+            parentDocumentId: 'parent-new',
+          },
+          {
+            documentId: 'doc-1',
+            updatedAt: '2026-05-23T00:00:00.000Z',
+            url: 'https://wiki.example.com/doc/old',
+            title: 'Doc One Old',
+            collectionId: 'col-old',
+            parentDocumentId: 'parent-old',
+          },
+        ]),
+      }),
+    });
+
+    const states = await store.getDocumentSyncStates();
+
+    expect(states.get('doc-1')).toEqual({
+      updatedAt: '2026-05-24T00:00:00.000Z',
+      url: 'https://wiki.example.com/doc/new',
+      title: 'Doc One',
+      collectionId: 'col-new',
+      parentDocumentId: 'parent-new',
+    });
   });
 });

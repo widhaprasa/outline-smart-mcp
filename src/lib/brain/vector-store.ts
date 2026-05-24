@@ -8,7 +8,13 @@ import * as lancedb from '@lancedb/lancedb';
 import fs from 'fs';
 import path from 'path';
 import { VECTOR_STORE, EMBEDDING, SEARCH } from './constants.js';
-import type { IVectorStore, VectorRecord, SearchResult, VectorStoreConfig } from './types.js';
+import type {
+  IVectorStore,
+  VectorRecord,
+  SearchResult,
+  VectorStoreConfig,
+  DocumentSyncState,
+} from './types.js';
 
 export class VectorStore implements IVectorStore {
   private readonly dbPath: string;
@@ -83,23 +89,37 @@ export class VectorStore implements IVectorStore {
   }
 
   /**
-   * Get all document IDs with their updatedAt timestamps
+   * Get current sync state for each stored document.
+   * Used to detect updates even when updatedAt is unchanged (e.g., moves/metadata changes).
    */
-  async getDocumentIds(): Promise<Map<string, string>> {
+  async getDocumentSyncStates(): Promise<Map<string, DocumentSyncState>> {
     if (!this.db) await this.init();
 
     const table = await this.db!.openTable(this.tableName);
-    const results = await table.query().select(['documentId', 'updatedAt']).toArray();
+    const results = await table
+      .query()
+      .select(['documentId', 'updatedAt', 'url', 'title', 'collectionId', 'parentDocumentId'])
+      .toArray();
 
-    const docMap = new Map<string, string>();
+    const docMap = new Map<string, DocumentSyncState>();
     for (const r of results) {
       const docId = r.documentId as string | undefined;
       const updatedAt = r.updatedAt as string | undefined;
       if (docId && docId !== VECTOR_STORE.INIT_RECORD_ID) {
-        // Keep the latest updatedAt for each document
+        // Keep the row with the latest updatedAt as canonical state for each document.
         const existing = docMap.get(docId);
-        if (!existing || (updatedAt && updatedAt > existing)) {
-          docMap.set(docId, updatedAt || '');
+        const existingUpdatedAt = existing?.updatedAt || '';
+        const currentUpdatedAt = updatedAt || '';
+
+        if (!existing || currentUpdatedAt >= existingUpdatedAt) {
+          docMap.set(docId, {
+            updatedAt: currentUpdatedAt,
+            url: (r.url as string | undefined) || undefined,
+            title: (r.title as string | undefined) || undefined,
+            collectionId: (r.collectionId as string | undefined) || undefined,
+            parentDocumentId:
+              (r.parentDocumentId as string | null | undefined) ?? undefined,
+          });
         }
       }
     }

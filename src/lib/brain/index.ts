@@ -41,6 +41,19 @@ export class Brain implements IBrain {
   private readonly chunkOverlap: number;
   private initialized: boolean = false;
 
+  private hasMetadataChanged(doc: WikiDocument, existing?: { url?: string; title?: string; collectionId?: string; parentDocumentId?: string | null }): boolean {
+    if (!existing) {
+      return false;
+    }
+
+    return (
+      (doc.url || '') !== (existing.url || '') ||
+      (doc.title || '') !== (existing.title || '') ||
+      (doc.collectionId || '') !== (existing.collectionId || '') ||
+      (doc.parentDocumentId ?? null) !== (existing.parentDocumentId ?? null)
+    );
+  }
+
   constructor(config: SmartConfig = {}, deps?: BrainDependencies) {
     const apiKey = config.openaiApiKey || process.env.OPENAI_API_KEY;
     const enabledEnv = process.env.ENABLE_SMART_FEATURES === 'true';
@@ -86,8 +99,8 @@ export class Brain implements IBrain {
     this.checkEnabled();
     await this.ensureInitialized();
 
-    // Get existing document timestamps from vector store
-    const existingDocs = await this.store.getDocumentIds();
+    // Get current sync state from vector store
+    const existingDocs = await this.store.getDocumentSyncStates();
 
     const splitter = new RecursiveCharacterTextSplitter({
       chunkSize: this.chunkSize,
@@ -106,17 +119,19 @@ export class Brain implements IBrain {
       }
 
       // Check if document needs sync (new or updated)
-      const existingTimestamp = existingDocs.get(doc.id);
+      const existingState = existingDocs.get(doc.id);
+      const existingTimestamp = existingState?.updatedAt || '';
       const docTimestamp = doc.updatedAt || '';
+      const metadataChanged = this.hasMetadataChanged(doc, existingState);
 
-      if (existingTimestamp && docTimestamp && existingTimestamp >= docTimestamp) {
-        // Document hasn't changed, skip
+      if (existingTimestamp && docTimestamp && existingTimestamp >= docTimestamp && !metadataChanged) {
+        // Document hasn't changed in content or metadata, skip.
         skippedDocs++;
         continue;
       }
 
       // If document exists but is updated, delete old chunks first
-      if (existingTimestamp) {
+      if (existingState) {
         await this.store.deleteByDocumentId(doc.id);
         updatedDocs++;
       }
@@ -138,6 +153,8 @@ export class Brain implements IBrain {
             title: doc.title,
             url: doc.url || `https://app.getoutline.com/doc/${doc.id}`,
             documentId: doc.id,
+            collectionId: doc.collectionId,
+            parentDocumentId: doc.parentDocumentId,
             updatedAt: doc.updatedAt,
           });
         }
@@ -170,17 +187,19 @@ export class Brain implements IBrain {
     }
 
     // Check if document needs sync
-    const existingDocs = await this.store.getDocumentIds();
-    const existingTimestamp = existingDocs.get(doc.id);
+    const existingDocs = await this.store.getDocumentSyncStates();
+    const existingState = existingDocs.get(doc.id);
+    const existingTimestamp = existingState?.updatedAt || '';
     const docTimestamp = doc.updatedAt || '';
+    const metadataChanged = this.hasMetadataChanged(doc, existingState);
 
-    if (existingTimestamp && docTimestamp && existingTimestamp >= docTimestamp) {
-      // Document hasn't changed
+    if (existingTimestamp && docTimestamp && existingTimestamp >= docTimestamp && !metadataChanged) {
+      // Document hasn't changed in content or metadata.
       return { synced: false, chunks: 0 };
     }
 
     // Delete old chunks if exists
-    if (existingTimestamp) {
+    if (existingState) {
       await this.store.deleteByDocumentId(doc.id);
     }
 
@@ -206,6 +225,8 @@ export class Brain implements IBrain {
           title: doc.title,
           url: doc.url || `https://app.getoutline.com/doc/${doc.id}`,
           documentId: doc.id,
+          collectionId: doc.collectionId,
+          parentDocumentId: doc.parentDocumentId,
           updatedAt: doc.updatedAt,
         });
       }
